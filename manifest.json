@@ -1,0 +1,48 @@
+{
+  "manifest_version": "0.3",
+  "name": "bitwarden-docs",
+  "display_name": "Bitwarden Docs (Unofficial)",
+  "version": "0.1.2",
+  "description": "Search official Bitwarden help and selected sales references on this computer.",
+  "long_description": "Public documentation only. Search and read cited sections, inspect freshness, and refresh the local cache. No Bitwarden login, vault access, hosting, or API key. First use downloads official English documentation. Text returned by the tools is sent to Claude for its answer. This extension is not affiliated with or endorsed by Bitwarden. Private extension updates require installing a new package.",
+  "author": {
+    "name": "Conor Mongan"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "server/server.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/server.js"]
+    }
+  },
+  "tools": [
+    {
+      "name": "search_docs",
+      "description": "Find relevant official documentation passages with source URLs."
+    },
+    {
+      "name": "read_doc",
+      "description": "Read a document or section with pagination and citations."
+    },
+    {
+      "name": "list_docs",
+      "description": "Browse the full cached documentation catalogue."
+    },
+    {
+      "name": "docs_status",
+      "description": "Check coverage, freshness and refresh failures."
+    },
+    {
+      "name": "refresh_docs",
+      "description": "Download current official documentation into the local cache."
+    }
+  ],
+  "compatibility": {
+    "platforms": ["darwin", "win32"],
+    "runtimes": {
+      "node": ">=22"
+    }
+  },
+  "keywords": ["documentation", "bitwarden", "sales", "local", "read-only"]
+}

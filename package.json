@@ -1,0 +1,40 @@
+{
+  "name": "bitwarden-docs-mcp",
+  "version": "0.1.2",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run build && node --test dist/test/*.test.js",
+    "refresh": "node dist/src/cli.js refresh",
+    "status": "node dist/src/cli.js status",
+    "eval": "node dist/src/evaluate.js",
+    "audit": "node dist/src/audit.js",
+    "smoke": "node dist/src/smoke.js",
+    "check:updates": "npm test && npm run lint && npm run refresh && npm run eval && npm run smoke && npm run audit",
+    "start": "node dist/src/server.js",
+    "format": "prettier --write 'src/**/*.ts' 'test/**/*.ts' '*.json'",
+    "lint": "prettier --check 'src/**/*.ts' 'test/**/*.ts' '*.json'",
+    "package": "npm run build && node scripts/package.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "cheerio": "^1.1.2",
+    "proper-lockfile": "4.1.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@anthropic-ai/mcpb": "^2.1.2",
+    "@types/node": "^22.0.0",
+    "@types/proper-lockfile": "^4.1.4",
+    "prettier": "^3.6.2",
+    "typescript": "~6.0.3"
+  },
+  "description": "Local official Bitwarden documentation search for Claude Desktop",
+  "overrides": {
+    "tmp": "0.2.7"
+  }
+}
