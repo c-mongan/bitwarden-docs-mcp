@@ -15,8 +15,20 @@ const transport = new StdioClientTransport({
 try {
   await client.connect(transport);
   const tools = await client.listTools();
-  if (tools.tools.length !== 5)
-    throw new Error("Expected five documentation tools");
+  const expected = [
+    "capture_evidence",
+    "docs_status",
+    "get_guidance",
+    "list_docs",
+    "read_doc",
+    "refresh_docs",
+    "search_docs",
+  ];
+  const names = tools.tools.map((tool) => tool.name).sort();
+  if (JSON.stringify(names) !== JSON.stringify(expected))
+    throw new Error(`Unexpected tools: ${names.join(", ")}`);
+  if (tools.tools.some((tool) => !tool.outputSchema))
+    throw new Error("Every tool must declare an output schema");
   const results = [];
   for (const query of [
     {
@@ -53,13 +65,40 @@ try {
       durationMs: performance.now() - started,
     });
   }
+  const guidance = await client.callTool({
+    name: "get_guidance",
+    arguments: {
+      question:
+        "Does our identity provider get vault decryption keys when we enable SSO?",
+    },
+  });
+  const guide = z
+    .object({
+      status: z.string(),
+      topics: z.array(z.object({ id: z.string() })).min(1),
+      documentation: z
+        .array(z.object({ url: z.string().url(), linkStatus: z.string() }))
+        .min(1),
+      recommendations: z.array(z.object({ id: z.string() })).min(1),
+    })
+    .parse(guidance.structuredContent);
+  if (!guide.documentation.some((item) => item.linkStatus === "verified"))
+    throw new Error("Guidance returned no verified section link");
   const report = await client.callTool({ name: "docs_status", arguments: {} });
   if (report.isError) throw new Error("Diagnostics call failed");
   const evidence = {
     at: new Date().toISOString(),
     protocol: "real MCP stdio",
-    tools: tools.tools.map((tool) => tool.name),
+    tools: names,
     results,
+    guidance: {
+      status: guide.status,
+      topics: guide.topics.map((topic) => topic.id),
+      citations: guide.documentation.map((item) => ({
+        url: item.url,
+        linkStatus: item.linkStatus,
+      })),
+    },
   };
   await atomicJson(join(CACHE, "smoke.json"), evidence);
   console.log(JSON.stringify(evidence, null, 2));

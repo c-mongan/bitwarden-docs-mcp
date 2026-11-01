@@ -42,6 +42,9 @@ function fixture(): Corpus {
         fetchedAt: new Date().toISOString(),
         sha256: createHash("sha256").update(text).digest("hex"),
         text,
+        anchors: { "regression-fixture": "Regression fixture" },
+        anchorsCheckedAt: new Date().toISOString(),
+        anchorsSha256: createHash("sha256").update(text).digest("hex"),
       };
     }),
   };

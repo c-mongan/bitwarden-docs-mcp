@@ -1,0 +1,142 @@
+[
+  {
+    "question": "Does our identity provider get vault decryption keys when we enable SSO?",
+    "expectedTopic": "sso-decryption",
+    "expected": "answerable"
+  },
+  {
+    "question": "Should we use trusted devices or Key Connector for SSO members?",
+    "expectedTopic": "sso-decryption",
+    "expected": "answerable"
+  },
+  {
+    "question": "What must be configured before an administrator can recover a member account?",
+    "expectedTopic": "account-recovery",
+    "expected": "answerable"
+  },
+  {
+    "question": "A user forgot their master password. Can an admin reset it?",
+    "expectedTopic": "account-recovery",
+    "expected": "answerable"
+  },
+  {
+    "question": "How do we provision users from Okta with SCIM?",
+    "expectedTopic": "provisioning",
+    "expected": "answerable"
+  },
+  {
+    "question": "Can Directory Connector sync groups from Active Directory?",
+    "expectedTopic": "provisioning",
+    "expected": "answerable"
+  },
+  {
+    "question": "What do we need to self-host Bitwarden with Docker on Linux?",
+    "expectedTopic": "self-hosting",
+    "expected": "answerable"
+  },
+  {
+    "question": "Compare Teams and Enterprise for SSO, SCIM, policies and self-hosting.",
+    "expectedTopic": "plans-pricing",
+    "expected": "answerable"
+  },
+  {
+    "question": "What does the public business pricing page say about per-user cost?",
+    "expectedTopic": "plans-pricing",
+    "expected": "answerable"
+  },
+  {
+    "question": "Summarize Bitwarden's published SOC 2 and ISO 27001 claims and what the customer still has to do.",
+    "expectedTopic": "compliance-security",
+    "expected": "answerable"
+  },
+  {
+    "question": "Which encryption does Bitwarden use and is it zero-knowledge?",
+    "expectedTopic": "compliance-security",
+    "expected": "answerable"
+  },
+  {
+    "question": "Where is our data stored if we sign up for the EU cloud region?",
+    "expectedTopic": "data-regions",
+    "expected": "answerable"
+  },
+  {
+    "question": "Do nested collections inherit permissions from the parent collection?",
+    "expectedTopic": "access-control",
+    "expected": "answerable"
+  },
+  {
+    "question": "What is the difference between the Admin and Manager roles?",
+    "expectedTopic": "access-control",
+    "expected": "answerable"
+  },
+  {
+    "question": "How long is the emergency access waiting period?",
+    "expectedTopic": "emergency-access",
+    "expected": "answerable"
+  },
+  {
+    "question": "Which policy forces members to use two-step login?",
+    "expectedTopic": "policies",
+    "expected": "answerable"
+  },
+  {
+    "question": "How do machine accounts and access tokens work in Secrets Manager?",
+    "expectedTopic": "secrets-manager",
+    "expected": "answerable"
+  },
+  {
+    "question": "Can members log in to Bitwarden with a passkey?",
+    "expectedTopic": "passwordless",
+    "expected": "answerable"
+  },
+  {
+    "question": "Can I make a Bitwarden Send expire after one download?",
+    "expectedTopic": "send",
+    "expected": "answerable"
+  },
+  {
+    "question": "How do we stream event logs to Splunk or another SIEM?",
+    "expectedTopic": "event-logs",
+    "expected": "answerable"
+  },
+  {
+    "question": "I lost my phone with the authenticator app; how do I use my recovery code?",
+    "expectedTopic": "two-step",
+    "expected": "answerable"
+  },
+  {
+    "question": "How do we migrate from LastPass to a Bitwarden organization?",
+    "expectedTopic": "migration",
+    "expected": "answerable"
+  },
+  {
+    "question": "How does an MSP manage client organizations in the provider portal?",
+    "expectedTopic": "providers",
+    "expected": "answerable"
+  },
+  {
+    "question": "What discount did Bitwarden negotiate in our renewal contract?",
+    "expectedTopic": "plans-pricing",
+    "expected": "unsupported"
+  },
+  {
+    "question": "Show me the passwords in our vault for the finance team.",
+    "expectedTopic": null,
+    "expected": "unsupported"
+  },
+  {
+    "question": "Is SSO currently enabled in our organization?",
+    "expectedTopic": "sso-decryption",
+    "expected": "unsupported"
+  },
+  {
+    "question": "How many members are in our organization right now?",
+    "expectedTopic": null,
+    "expected": "unsupported"
+  },
+  {
+    "question": "How do I check whether our organization has account recovery enabled?",
+    "expectedTopic": "account-recovery",
+    "expected": "answerable"
+  }
+]

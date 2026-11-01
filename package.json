@@ -1,6 +1,6 @@
 {
   "name": "bitwarden-docs-mcp",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -14,15 +14,23 @@
     "eval": "node dist/src/evaluate.js",
     "audit": "node dist/src/audit.js",
     "smoke": "node dist/src/smoke.js",
-    "check:updates": "npm test && npm run lint && npm run refresh && npm run eval && npm run smoke && npm run audit",
+    "check:updates": "npm test && npm run lint && npm run refresh && npm run eval && npm run eval:benchmark -- retrieval development && npm run eval:guidance && npm run smoke && npm run smoke:evidence && npm run audit",
     "start": "node dist/src/server.js",
     "format": "prettier --write 'src/**/*.ts' 'test/**/*.ts' '*.json'",
     "lint": "prettier --check 'src/**/*.ts' 'test/**/*.ts' '*.json'",
-    "package": "npm run build && node scripts/package.mjs"
+    "package": "npm run build && node scripts/package.mjs",
+    "eval:benchmark": "node dist/src/evaluate-benchmark.js",
+    "eval:answers": "node dist/src/evaluate-answers.js",
+    "eval:guidance": "node dist/src/evaluate-guidance.js",
+    "refresh:links": "node dist/src/cli.js links",
+    "guides:lock": "node dist/src/cli.js guides-lock",
+    "smoke:evidence": "node dist/src/evidence-smoke.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.32.2",
     "cheerio": "^1.1.2",
+    "marked": "17.0.1",
+    "playwright-core": "1.64.1",
     "proper-lockfile": "4.1.2",
     "zod": "^4.6.7"
   },

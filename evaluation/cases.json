@@ -1,0 +1,668 @@
+[
+  {
+    "id": "development-01",
+    "split": "development",
+    "question": "Does SSO give our identity provider access to vault decryption keys?",
+    "expectedDocuments": [
+      "help:help/about-sso",
+      "help:help/sso-faqs",
+      "help:help/sso-decryption-options"
+    ],
+    "rubric": "No. SSO separates authentication from decryption; cite the zero-knowledge statement. Do not claim the IdP holds keys.",
+    "critical": true
+  },
+  {
+    "id": "development-02",
+    "split": "development",
+    "question": "What member decryption options are available when an organization uses SSO?",
+    "expectedDocuments": [
+      "help:help/sso-decryption-options",
+      "help:help/about-sso"
+    ],
+    "rubric": "Name master password, trusted devices and Key Connector with their documented requirements.",
+    "critical": false
+  },
+  {
+    "id": "development-03",
+    "split": "development",
+    "question": "How does trusted device encryption work for members who log in with SSO?",
+    "expectedDocuments": [
+      "help:help/about-trusted-devices",
+      "help:help/setup-sso-with-trusted-devices",
+      "help:help/add-a-trusted-device"
+    ],
+    "rubric": "Explain device trust and approval routes as documented.",
+    "critical": false
+  },
+  {
+    "id": "development-04",
+    "split": "development",
+    "question": "What do I need to deploy Key Connector?",
+    "expectedDocuments": [
+      "help:help/deploy-key-connector",
+      "help:help/about-key-connector"
+    ],
+    "rubric": "State self-hosted Key Connector requirements; do not call it a cloud toggle.",
+    "critical": false
+  },
+  {
+    "id": "development-05",
+    "split": "development",
+    "question": "What must be in place before an administrator can recover a member account?",
+    "expectedDocuments": [
+      "help:help/account-recovery",
+      "help:help/account-recovery-enrollment",
+      "help:help/recover-a-member-account"
+    ],
+    "rubric": "Policy enabled and member enrolled; role limits apply. Do not promise recovery for unenrolled members.",
+    "critical": true
+  },
+  {
+    "id": "development-06",
+    "split": "development",
+    "question": "I forgot my master password. Can Bitwarden recover it for me?",
+    "expectedDocuments": [
+      "help:help/forgot-master-password",
+      "help:help/account-recovery",
+      "help:help/master-password"
+    ],
+    "rubric": "Bitwarden cannot see or recover the master password; describe documented options only.",
+    "critical": true
+  },
+  {
+    "id": "development-07",
+    "split": "development",
+    "question": "How do I set up SCIM provisioning with Microsoft Entra ID?",
+    "expectedDocuments": [
+      "help:help/microsoft-entra-id-scim-integration",
+      "help:help/about-scim"
+    ],
+    "rubric": "Cite the Entra SCIM integration steps.",
+    "critical": false
+  },
+  {
+    "id": "development-08",
+    "split": "development",
+    "question": "Can Directory Connector run on a schedule, and how often does it sync?",
+    "expectedDocuments": [
+      "help:help/schedule-directory-sync",
+      "help:help/directory-sync",
+      "help:help/directory-sync-desktop",
+      "help:help/directory-sync-cli"
+    ],
+    "rubric": "Describe documented sync scheduling options.",
+    "critical": false
+  },
+  {
+    "id": "development-09",
+    "split": "development",
+    "question": "Do nested collections inherit their parent's permissions?",
+    "expectedDocuments": [
+      "help:help/about-collections",
+      "help:help/collection-permissions",
+      "help:help/collection-management"
+    ],
+    "rubric": "No; nesting changes display only.",
+    "critical": true
+  },
+  {
+    "id": "development-10",
+    "split": "development",
+    "question": "What can a member with the Manager role do compared with an Admin?",
+    "expectedDocuments": [
+      "help:help/user-types-access-control"
+    ],
+    "rubric": "Use the role table; distinguish roles from collection permissions.",
+    "critical": false
+  },
+  {
+    "id": "development-11",
+    "split": "development",
+    "question": "What are the system requirements for self-hosting Bitwarden on Linux?",
+    "expectedDocuments": [
+      "help:help/install-on-premise-linux",
+      "help:help/self-host-bitwarden",
+      "help:help/install-on-premise-manual"
+    ],
+    "rubric": "Quote documented requirements; do not claim zero maintenance.",
+    "critical": false
+  },
+  {
+    "id": "development-12",
+    "split": "development",
+    "question": "Can Bitwarden be deployed on Kubernetes with a Helm chart?",
+    "expectedDocuments": [
+      "help:help/self-host-with-helm"
+    ],
+    "rubric": "Cite the Helm deployment guide.",
+    "critical": false
+  },
+  {
+    "id": "development-13",
+    "split": "development",
+    "question": "Is Bitwarden cloud data stored in the United States or the European Union?",
+    "expectedDocuments": [
+      "help:help/server-geographies"
+    ],
+    "rubric": "Describe US and EU cloud regions and their separation.",
+    "critical": false
+  },
+  {
+    "id": "development-14",
+    "split": "development",
+    "question": "How can an administrator export organization event logs?",
+    "expectedDocuments": [
+      "help:help/event-logs"
+    ],
+    "rubric": "Describe the export option and its location.",
+    "critical": false
+  },
+  {
+    "id": "development-15",
+    "split": "development",
+    "question": "Which SIEM tools can receive Bitwarden event data?",
+    "expectedDocuments": [
+      "help:help/monitoring-event-logs",
+      "help:help/rapid7-siem",
+      "help:help/sumo-logic-siem",
+      "help:help/event-logs"
+    ],
+    "rubric": "List documented integrations only.",
+    "critical": false
+  },
+  {
+    "id": "development-16",
+    "split": "development",
+    "question": "How long does an emergency access request wait before access is granted?",
+    "expectedDocuments": [
+      "help:help/emergency-access",
+      "help:help/request-and-grant-emergency-access"
+    ],
+    "rubric": "Grantor-specified wait time; grantor can approve or reject earlier.",
+    "critical": false
+  },
+  {
+    "id": "development-17",
+    "split": "development",
+    "question": "What happens to a Send after its deletion date?",
+    "expectedDocuments": [
+      "help:help/send-lifespan",
+      "help:help/about-send"
+    ],
+    "rubric": "Describe deletion and expiration behaviour.",
+    "critical": false
+  },
+  {
+    "id": "development-18",
+    "split": "development",
+    "question": "Is Bitwarden Send end-to-end encrypted?",
+    "expectedDocuments": [
+      "help:help/send-encryption",
+      "help:help/send-privacy",
+      "help:help/about-send"
+    ],
+    "rubric": "Cite Send encryption documentation.",
+    "critical": false
+  },
+  {
+    "id": "development-19",
+    "split": "development",
+    "question": "How do I import my LastPass data into Bitwarden?",
+    "expectedDocuments": [
+      "help:help/import-from-lastpass",
+      "help:help/lastpass-enterprise-migration-guide",
+      "help:help/import-data"
+    ],
+    "rubric": "Cite the LastPass import steps.",
+    "critical": false
+  },
+  {
+    "id": "development-20",
+    "split": "development",
+    "question": "What is a two-step login recovery code used for?",
+    "expectedDocuments": [
+      "help:help/two-step-recovery-code"
+    ],
+    "rubric": "It disables two-step login when the device is lost; it does not recover a master password.",
+    "critical": true
+  },
+  {
+    "id": "development-21",
+    "split": "development",
+    "question": "Which enterprise policy requires members to log in with single sign-on?",
+    "expectedDocuments": [
+      "help:help/policies"
+    ],
+    "rubric": "Name the Require single sign-on policy and its role exceptions.",
+    "critical": false
+  },
+  {
+    "id": "development-22",
+    "split": "development",
+    "question": "What is a machine account in Secrets Manager?",
+    "expectedDocuments": [
+      "help:help/machine-accounts",
+      "help:help/secrets-manager-overview"
+    ],
+    "rubric": "Non-human identity for programmatic access.",
+    "critical": false
+  },
+  {
+    "id": "development-23",
+    "split": "development",
+    "question": "How do access tokens authenticate Secrets Manager machine accounts?",
+    "expectedDocuments": [
+      "help:help/access-tokens",
+      "help:help/machine-accounts"
+    ],
+    "rubric": "Describe token creation, scope and expiry.",
+    "critical": false
+  },
+  {
+    "id": "development-24",
+    "split": "development",
+    "question": "Can I log in to Bitwarden with a passkey instead of my master password?",
+    "expectedDocuments": [
+      "help:help/login-with-passkeys"
+    ],
+    "rubric": "Describe passkey login and its documented limits.",
+    "critical": false
+  },
+  {
+    "id": "development-25",
+    "split": "development",
+    "question": "How much does the Teams plan cost per user compared with Enterprise?",
+    "expectedDocuments": [
+      "sales:pricing",
+      "sales:pricing/business",
+      "help:help/password-manager-plans"
+    ],
+    "rubric": "Give public prices with currency, billing period, per-user unit, tax qualification and retrieval date; not a quote.",
+    "critical": true
+  },
+  {
+    "id": "development-26",
+    "split": "development",
+    "question": "Which compliance certifications and audits does Bitwarden publish?",
+    "expectedDocuments": [
+      "sales:compliance",
+      "help:help/bitwarden-security-white-paper",
+      "help:help/security-faqs"
+    ],
+    "rubric": "Attribute claims to Bitwarden; do not certify the customer.",
+    "critical": true
+  },
+  {
+    "id": "development-27",
+    "split": "development",
+    "question": "What encryption algorithms does Bitwarden use to protect vault data?",
+    "expectedDocuments": [
+      "help:help/what-encryption-is-used",
+      "help:help/bitwarden-security-white-paper",
+      "help:help/kdf-algorithms"
+    ],
+    "rubric": "Describe documented algorithms only.",
+    "critical": false
+  },
+  {
+    "id": "development-28",
+    "split": "development",
+    "question": "How do managed service providers administer their client organizations?",
+    "expectedDocuments": [
+      "help:help/providers",
+      "help:help/manage-client-orgs",
+      "help:help/getting-started-providers",
+      "help:help/provider-users",
+      "sales:msp"
+    ],
+    "rubric": "Describe provider portal and client management.",
+    "critical": false
+  },
+  {
+    "id": "development-29",
+    "split": "development",
+    "question": "What discount did Bitwarden negotiate for our ACME renewal last month?",
+    "expectedDocuments": [],
+    "rubric": "Abstain: private negotiated terms are not in public documentation.",
+    "critical": true,
+    "requireAbstention": true
+  },
+  {
+    "id": "development-30",
+    "split": "development",
+    "question": "List the passwords stored in our company vault.",
+    "expectedDocuments": [],
+    "rubric": "Abstain: the server cannot read vaults or credentials.",
+    "critical": true,
+    "requireAbstention": true
+  },
+  {
+    "id": "heldout-01",
+    "split": "heldout",
+    "question": "If our Okta identity provider goes offline, can members still log in to Bitwarden?",
+    "expectedDocuments": [
+      "help:help/sso-faqs",
+      "help:help/about-sso"
+    ],
+    "rubric": "Answer from the SSO FAQ; distinguish SSO authentication from master password login.",
+    "critical": false
+  },
+  {
+    "id": "heldout-02",
+    "split": "heldout",
+    "question": "Does changing my identity provider password change my Bitwarden master password?",
+    "expectedDocuments": [
+      "help:help/sso-faqs"
+    ],
+    "rubric": "No, per the SSO FAQ.",
+    "critical": false
+  },
+  {
+    "id": "heldout-03",
+    "split": "heldout",
+    "question": "Can an administrator approve a new device for an SSO user who has no master password?",
+    "expectedDocuments": [
+      "help:help/approve-a-trusted-device",
+      "help:help/about-trusted-devices",
+      "help:help/add-a-trusted-device"
+    ],
+    "rubric": "Describe admin device approval with trusted devices.",
+    "critical": false
+  },
+  {
+    "id": "heldout-04",
+    "split": "heldout",
+    "question": "Who is allowed to recover an owner's account?",
+    "expectedDocuments": [
+      "help:help/account-recovery",
+      "help:help/recover-a-member-account"
+    ],
+    "rubric": "Only another owner.",
+    "critical": true
+  },
+  {
+    "id": "heldout-05",
+    "split": "heldout",
+    "question": "Does a member have to enroll in account recovery themselves or can it be automatic?",
+    "expectedDocuments": [
+      "help:help/account-recovery-enrollment",
+      "help:help/policies",
+      "help:help/account-recovery"
+    ],
+    "rubric": "Describe self-enrollment and automatic enrollment policy options.",
+    "critical": false
+  },
+  {
+    "id": "heldout-06",
+    "split": "heldout",
+    "question": "Can we provision Bitwarden users from Okta automatically?",
+    "expectedDocuments": [
+      "help:help/okta-scim-integration",
+      "help:help/okta-directory",
+      "help:help/about-scim"
+    ],
+    "rubric": "Describe Okta SCIM or Directory Connector options.",
+    "critical": false
+  },
+  {
+    "id": "heldout-07",
+    "split": "heldout",
+    "question": "Does SCIM work with a self-hosted Bitwarden server?",
+    "expectedDocuments": [
+      "help:help/self-hosting-scim",
+      "help:help/about-scim"
+    ],
+    "rubric": "Cite self-hosting SCIM requirements.",
+    "critical": false
+  },
+  {
+    "id": "heldout-08",
+    "split": "heldout",
+    "question": "How do I sync users from an LDAP or Active Directory server?",
+    "expectedDocuments": [
+      "help:help/ldap-directory",
+      "help:help/directory-sync",
+      "help:help/directory-sync-shared"
+    ],
+    "rubric": "Cite Directory Connector LDAP configuration.",
+    "critical": false
+  },
+  {
+    "id": "heldout-09",
+    "split": "heldout",
+    "question": "What permission levels can a collection have, such as can manage or view only?",
+    "expectedDocuments": [
+      "help:help/collection-permissions",
+      "help:help/user-types-access-control",
+      "help:help/about-collections",
+      "help:help/collection-management"
+    ],
+    "rubric": "List documented collection permissions.",
+    "critical": false
+  },
+  {
+    "id": "heldout-10",
+    "split": "heldout",
+    "question": "What should we do when the organization owner leaves the company?",
+    "expectedDocuments": [
+      "help:help/managing-access-when-the-organization-owner-leaves",
+      "help:help/transfer-ownership"
+    ],
+    "rubric": "Cite succession guidance.",
+    "critical": false
+  },
+  {
+    "id": "heldout-11",
+    "split": "heldout",
+    "question": "Can Bitwarden run in an air-gapped environment without internet access?",
+    "expectedDocuments": [
+      "help:help/install-and-deploy-offline",
+      "help:help/install-and-deploy-offline-windows"
+    ],
+    "rubric": "Cite offline deployment guides and their limits.",
+    "critical": false
+  },
+  {
+    "id": "heldout-12",
+    "split": "heldout",
+    "question": "What is Bitwarden Lite and when should I use it?",
+    "expectedDocuments": [
+      "help:help/install-and-deploy-lite"
+    ],
+    "rubric": "Describe the Lite deployment as documented.",
+    "critical": false
+  },
+  {
+    "id": "heldout-13",
+    "split": "heldout",
+    "question": "Can I move my account from the US cloud to the EU cloud automatically?",
+    "expectedDocuments": [
+      "help:help/server-geographies"
+    ],
+    "rubric": "No automatic move; documented migration is export, create account in new region, import.",
+    "critical": true
+  },
+  {
+    "id": "heldout-14",
+    "split": "heldout",
+    "question": "What kinds of actions are recorded in organization event logs?",
+    "expectedDocuments": [
+      "help:help/event-logs"
+    ],
+    "rubric": "List documented event categories.",
+    "critical": false
+  },
+  {
+    "id": "heldout-15",
+    "split": "heldout",
+    "question": "Can my emergency contact take over my account, or only view my vault?",
+    "expectedDocuments": [
+      "help:help/emergency-access",
+      "help:help/request-and-grant-emergency-access",
+      "help:help/add-and-manage-trusted-emergency-contacts"
+    ],
+    "rubric": "Describe view and takeover access levels.",
+    "critical": false
+  },
+  {
+    "id": "heldout-16",
+    "split": "heldout",
+    "question": "Can I limit how many times a Send can be opened?",
+    "expectedDocuments": [
+      "help:help/create-send",
+      "help:help/send-lifespan",
+      "help:help/about-send"
+    ],
+    "rubric": "Describe the maximum access count option.",
+    "critical": false
+  },
+  {
+    "id": "heldout-17",
+    "split": "heldout",
+    "question": "How do I import data from 1Password?",
+    "expectedDocuments": [
+      "help:help/import-from-1password",
+      "help:help/import-data"
+    ],
+    "rubric": "Cite the 1Password import steps.",
+    "critical": false
+  },
+  {
+    "id": "heldout-18",
+    "split": "heldout",
+    "question": "I lost the phone with my authenticator app. How can I get back into my account?",
+    "expectedDocuments": [
+      "help:help/lost-two-step-device",
+      "help:help/two-step-recovery-code"
+    ],
+    "rubric": "Use the recovery code; describe documented options without inventing support bypass.",
+    "critical": true
+  },
+  {
+    "id": "heldout-19",
+    "split": "heldout",
+    "question": "What vault timeout settings can an organization enforce on members?",
+    "expectedDocuments": [
+      "help:help/vault-timeout",
+      "help:help/policies"
+    ],
+    "rubric": "Describe the vault timeout policy.",
+    "critical": false
+  },
+  {
+    "id": "heldout-20",
+    "split": "heldout",
+    "question": "How do I use Secrets Manager secrets in a Kubernetes cluster?",
+    "expectedDocuments": [
+      "help:help/secrets-manager-kubernetes-operator"
+    ],
+    "rubric": "Cite the Kubernetes operator.",
+    "critical": false
+  },
+  {
+    "id": "heldout-21",
+    "split": "heldout",
+    "question": "Is there a Terraform provider for Bitwarden Secrets Manager?",
+    "expectedDocuments": [
+      "help:help/terraform-provider"
+    ],
+    "rubric": "Cite the Terraform provider page.",
+    "critical": false
+  },
+  {
+    "id": "heldout-22",
+    "split": "heldout",
+    "question": "Can Bitwarden store passkeys for other websites?",
+    "expectedDocuments": [
+      "help:help/storing-passkeys"
+    ],
+    "rubric": "Describe passkey storage and client limits.",
+    "critical": false
+  },
+  {
+    "id": "heldout-23",
+    "split": "heldout",
+    "question": "How does logging in with a device work without typing my master password?",
+    "expectedDocuments": [
+      "help:help/log-in-with-device",
+      "help:help/understand-log-in-vs-unlock"
+    ],
+    "rubric": "Describe device approval flow.",
+    "critical": false
+  },
+  {
+    "id": "heldout-24",
+    "split": "heldout",
+    "question": "What does the Families plan include and how many users does it cover?",
+    "expectedDocuments": [
+      "sales:pricing",
+      "sales:pricing/business",
+      "help:help/password-manager-plans"
+    ],
+    "rubric": "Give user limit and price with currency, billing period and retrieval date; not a quote.",
+    "critical": true
+  },
+  {
+    "id": "heldout-25",
+    "split": "heldout",
+    "question": "Which features are only available on the Enterprise plan?",
+    "expectedDocuments": [
+      "help:help/enterprise-feature-list",
+      "help:help/password-manager-plans",
+      "sales:pricing/business"
+    ],
+    "rubric": "List documented Enterprise-only features.",
+    "critical": false
+  },
+  {
+    "id": "heldout-26",
+    "split": "heldout",
+    "question": "Who are Bitwarden's subprocessors?",
+    "expectedDocuments": [
+      "help:help/subprocessors"
+    ],
+    "rubric": "Cite the subprocessor list with its date.",
+    "critical": false
+  },
+  {
+    "id": "heldout-27",
+    "split": "heldout",
+    "question": "Which key derivation functions can protect the master password?",
+    "expectedDocuments": [
+      "help:help/kdf-algorithms",
+      "help:help/what-encryption-is-used"
+    ],
+    "rubric": "Name PBKDF2 and Argon2id as documented.",
+    "critical": false
+  },
+  {
+    "id": "heldout-28",
+    "split": "heldout",
+    "question": "Can our Enterprise organization sponsor Families plans for employees?",
+    "expectedDocuments": [
+      "help:help/families-for-enterprise",
+      "help:help/organization-sponsored-families-plans",
+      "help:help/sponsored-families-faqs"
+    ],
+    "rubric": "Describe the sponsorship program.",
+    "critical": false
+  },
+  {
+    "id": "heldout-29",
+    "split": "heldout",
+    "question": "Is SSO currently enabled in our Bitwarden organization?",
+    "expectedDocuments": [],
+    "rubric": "Abstain: the server cannot read organization settings.",
+    "critical": true,
+    "requireAbstention": true
+  },
+  {
+    "id": "heldout-30",
+    "split": "heldout",
+    "question": "Will Bitwarden guarantee in our contract that we will never suffer a breach?",
+    "expectedDocuments": [],
+    "rubric": "Abstain from contractual guarantees; public docs can describe security design only.",
+    "critical": true,
+    "requireAbstention": true
+  }
+]

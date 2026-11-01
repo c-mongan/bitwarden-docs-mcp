@@ -2,9 +2,9 @@
   "manifest_version": "0.3",
   "name": "bitwarden-docs",
   "display_name": "Bitwarden Docs (Unofficial)",
-  "version": "0.1.2",
-  "description": "Search official Bitwarden help and selected sales references on this computer.",
-  "long_description": "Public documentation only. Search and read cited sections, inspect freshness, and refresh the local cache. No Bitwarden login, vault access, hosting, or API key. First use downloads official English documentation. Text returned by the tools is sent to Claude for its answer. This extension is not affiliated with or endorsed by Bitwarden. Private extension updates require installing a new package.",
+  "version": "0.2.0",
+  "description": "Search official Bitwarden help and selected sales references on this computer, with cited guidance and optional highlighted screenshots.",
+  "long_description": "Public documentation only. Search and read cited sections with verified section links and excerpt hashes, get cited admin and security guidance, optionally capture highlighted screenshots of official pages with your installed Chrome or Edge, inspect freshness, and refresh the local cache. No Bitwarden login, vault access, hosting, or API key. First use downloads official English documentation. Text and screenshots returned by the tools are sent to Claude for its answer. This extension is not affiliated with or endorsed by Bitwarden. Private extension updates require installing a new package.",
   "author": {
     "name": "Conor Mongan"
   },
@@ -19,11 +19,19 @@
   "tools": [
     {
       "name": "search_docs",
-      "description": "Find relevant official documentation passages with source URLs."
+      "description": "Find relevant official documentation passages with source URLs and section links."
     },
     {
       "name": "read_doc",
-      "description": "Read a document or section with pagination and citations."
+      "description": "Read a document or section with pagination, excerpt hashes and citations."
+    },
+    {
+      "name": "get_guidance",
+      "description": "Get cited admin and security guidance with missing-information prompts."
+    },
+    {
+      "name": "capture_evidence",
+      "description": "Capture a highlighted screenshot of an official passage using an installed browser."
     },
     {
       "name": "list_docs",
@@ -31,7 +39,7 @@
     },
     {
       "name": "docs_status",
-      "description": "Check coverage, freshness and refresh failures."
+      "description": "Check coverage, freshness, section links and refresh failures."
     },
     {
       "name": "refresh_docs",
@@ -44,5 +52,12 @@
       "node": ">=22"
     }
   },
-  "keywords": ["documentation", "bitwarden", "sales", "local", "read-only"]
+  "keywords": [
+    "documentation",
+    "bitwarden",
+    "sales",
+    "local",
+    "read-only",
+    "citations"
+  ]
 }

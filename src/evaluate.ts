@@ -68,6 +68,8 @@ try {
       ...item,
       pass,
       rank: found ? response.results.indexOf(found) + 1 : null,
+      linkStatus: found?.linkStatus ?? null,
+      sectionUrl: found?.sectionUrl ?? null,
       retrieved: response.results.map((page: { url: string }) => page.url),
       fetchedAt,
       evidenceExcerpt:

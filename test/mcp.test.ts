@@ -8,6 +8,11 @@ import { fileURLToPath } from "node:url";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { atomicJson, type Corpus } from "../src/corpus.js";
+import { SERVER_VERSION } from "../src/version.js";
+
+const configureText =
+  "# Configuration reference\n\nonlyChanged enables TurboSnap.\n\n```js\nconst onlyChanged = true;\n```";
+const configureSha = createHash("sha256").update(configureText).digest("hex");
 
 test("real stdio MCP handshake, tool calls, validation, errors and diagnostics", async () => {
   const cache = await mkdtemp(join(tmpdir(), "docs-mcp-protocol-"));
@@ -23,8 +28,11 @@ test("real stdio MCP handshake, tool calls, validation, errors and diagnostics",
         fetchedFrom: "https://bitwarden.com/help/configure",
         version: "live",
         fetchedAt: new Date().toISOString(),
-        sha256: "fixture",
-        text: "# Configuration reference\n\nonlyChanged enables TurboSnap.\n\n```js\nconst onlyChanged = true;\n```",
+        sha256: configureSha,
+        text: configureText,
+        anchors: { "configuration-reference": "Configuration reference" },
+        anchorsCheckedAt: new Date().toISOString(),
+        anchorsSha256: configureSha,
       },
       {
         id: "sales:args",
@@ -67,12 +75,16 @@ test("real stdio MCP handshake, tool calls, validation, errors and diagnostics",
     await client.connect(transport);
     const tools = await client.listTools();
     assert.deepEqual(tools.tools.map((tool) => tool.name).sort(), [
+      "capture_evidence",
       "docs_status",
+      "get_guidance",
       "list_docs",
       "read_doc",
       "refresh_docs",
       "search_docs",
     ]);
+    for (const tool of tools.tools)
+      assert.ok(tool.outputSchema, `${tool.name} has an output schema`);
     const listed = await client.callTool({
       name: "list_docs",
       arguments: { limit: 1 },
@@ -102,6 +114,25 @@ test("real stdio MCP handshake, tool calls, validation, errors and diagnostics",
     });
     assert.equal(search.isError, undefined);
     assert.match(JSON.stringify(search), /help:configure/);
+    const hit = (
+      search.structuredContent as {
+        results: {
+          sectionUrl: string | null;
+          linkStatus: string;
+          excerpt: string;
+          excerptSha256: string;
+        }[];
+      }
+    ).results[0]!;
+    assert.equal(hit.linkStatus, "verified");
+    assert.equal(
+      hit.sectionUrl,
+      "https://bitwarden.com/help/configure#configuration-reference",
+    );
+    assert.equal(
+      hit.excerptSha256,
+      createHash("sha256").update(hit.excerpt).digest("hex"),
+    );
     const read = await client.callTool({
       name: "read_doc",
       arguments: { id: "help:configure" },
@@ -122,6 +153,11 @@ test("real stdio MCP handshake, tool calls, validation, errors and diagnostics",
     assert.equal(sectionContent?.type, "text");
     assert.equal(typeof sectionContent?.text, "string");
     const sectionData = JSON.parse(sectionContent.text);
+    assert.deepEqual(section.structuredContent, sectionData);
+    assert.equal(
+      sectionData.excerptSha256,
+      createHash("sha256").update(sectionData.text).digest("hex"),
+    );
     assert.equal(sectionData.section.id, "configuration-reference");
     assert.ok(Array.isArray(sectionData.sections));
     const wrongSection = await client.callTool({
@@ -146,7 +182,44 @@ test("real stdio MCP handshake, tool calls, validation, errors and diagnostics",
     assert.match(JSON.stringify(status), /observability/);
     assert.ok(Array.isArray(status.content));
     const statusData = JSON.parse(status.content[0].text);
-    assert.equal(statusData.server.version, "0.1.2");
+    assert.equal(statusData.server.version, SERVER_VERSION);
+    assert.equal(statusData.links.pagesWithVerifiedAnchors, 1);
+    const salesRead = await client.callTool({
+      name: "read_doc",
+      arguments: { id: "sales:args" },
+    });
+    assert.equal(
+      (salesRead.structuredContent as { linkStatus: string }).linkStatus,
+      "unverified",
+    );
+    const privateGuidance = await client.callTool({
+      name: "get_guidance",
+      arguments: { question: "What is our negotiated discount?" },
+    });
+    assert.equal(privateGuidance.isError, undefined);
+    const privateData = privateGuidance.structuredContent as {
+      status: string;
+      documentation: unknown[];
+      recommendations: unknown[];
+    };
+    assert.equal(privateData.status, "unsupported");
+    assert.equal(privateData.documentation.length, 0);
+    assert.equal(privateData.recommendations.length, 0);
+    const staleCapture = await client.callTool({
+      name: "capture_evidence",
+      arguments: {
+        id: "help:configure",
+        revision: "0".repeat(64),
+        startLine: 3,
+        endLine: 3,
+      },
+    });
+    assert.equal(staleCapture.isError, true);
+    assert.ok(
+      !(staleCapture.content as { type: string }[]).some(
+        (item) => item.type === "image",
+      ),
+    );
     assert.equal(statusData.readiness.state, "ready");
     assert.match(statusData.connection.sessionId, /^[a-f0-9-]{36}$/);
     assert.match(stderr, /"operation":"search_docs"/);

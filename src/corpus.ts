@@ -11,6 +11,7 @@ import {
   appendPrivateLog,
 } from "./local-files.js";
 import { z } from "zod";
+import { createCitationResolver, sha256 as digest } from "./evidence-text.js";
 import {
   sourceSchema,
   allowedUrl,
@@ -64,6 +65,9 @@ const pageSchema = z.object({
   sha256: z.string(),
   text: z.string().min(1).max(512_000),
   contentWarnings: z.array(z.string()).optional(),
+  anchors: z.record(z.string(), z.string()).optional(),
+  anchorsCheckedAt: z.string().datetime().optional(),
+  anchorsSha256: z.string().optional(),
 });
 export type Page = z.infer<typeof pageSchema>;
 const reportSchema = z.object({
@@ -81,10 +85,19 @@ const reportSchema = z.object({
   finishedAt: z.string(),
 });
 export type Report = z.infer<typeof reportSchema>;
+const linkReportSchema = z.object({
+  checkedAt: z.string(),
+  checked: z.number(),
+  pagesWithVerifiedAnchors: z.number(),
+  failed: z.array(z.object({ url: z.string(), error: z.string() })).max(500),
+  unavailable: z.number(),
+});
+export type LinkReport = z.infer<typeof linkReportSchema>;
 const corpusSchema = z.object({
   schemaVersion: z.literal(1),
   pages: z.array(pageSchema).max(2000),
   reports: z.array(reportSchema).max(2),
+  linkReport: linkReportSchema.optional(),
 });
 export type Corpus = z.infer<typeof corpusSchema>;
 
@@ -269,8 +282,19 @@ export async function refresh(
             });
             continue;
           }
+          const sha256 = digest(document.text);
+          // Rendered anchors stay valid only while the page body is unchanged.
+          const anchors =
+            previous?.sha256 === sha256 && previous.anchorsSha256 === sha256
+              ? {
+                  anchors: previous.anchors,
+                  anchorsCheckedAt: previous.anchorsCheckedAt,
+                  anchorsSha256: previous.anchorsSha256,
+                }
+              : {};
           pages.set(id, {
             ...document,
+            ...anchors,
             id,
             source,
             title: document.text.match(/^# (.+)$/m)![1]!,
@@ -281,7 +305,7 @@ export async function refresh(
               : [],
             version: "live",
             fetchedAt: new Date().toISOString(),
-            sha256: createHash("sha256").update(document.text).digest("hex"),
+            sha256,
           });
           report.refreshed++;
         }
@@ -300,6 +324,7 @@ export async function refresh(
       schemaVersion: 1,
       pages: [...pages.values()],
       reports: [...reports.values()],
+      ...(old.linkReport ? { linkReport: old.linkReport } : {}),
     };
     await atomicJson(join(cache, "corpus.json"), corpus);
     await event(cache, {
@@ -356,6 +381,20 @@ export function status(corpus: Corpus) {
         lastRefresh: report ?? null,
       };
     }),
+    links: {
+      pagesWithVerifiedAnchors: corpus.pages.filter(
+        (page) =>
+          page.anchorsSha256 === page.sha256 &&
+          Object.keys(page.anchors ?? {}).length > 0,
+      ).length,
+      pagesAwaitingCheck: corpus.pages.filter(
+        (page) => page.anchorsSha256 !== page.sha256,
+      ).length,
+      lastCheck: corpus.linkReport
+        ? { ...corpus.linkReport, failed: corpus.linkReport.failed.length }
+        : null,
+      note: "Verified section links come from rendered heading anchors checked against the same page body. Other citations use the page URL.",
+    },
   };
 }
 const STOP = new Set(
@@ -363,12 +402,19 @@ const STOP = new Set(
     " ",
   ),
 );
+// Light plural folding so "account" matches "Accounts"; applied to queries and documents alike.
+function stem(word: string): string {
+  if (word.length <= 3 || /(?:ss|us|is|ys)$/.test(word)) return word;
+  if (word.endsWith("ies") && word.length > 4) return `${word.slice(0, -3)}y`;
+  return word.endsWith("s") ? word.slice(0, -1) : word;
+}
 export function tokens(text: string): string[] {
   return (
     `${text} ${text.replace(/([a-z])([A-Z])/g, "$1 $2")}`
       .toLowerCase()
       .match(/[a-z0-9]+/g)
-      ?.filter((word) => word.length > 1 && !STOP.has(word)) ?? []
+      ?.filter((word) => word.length > 1 && !STOP.has(word))
+      .map(stem) ?? []
   );
 }
 
@@ -501,11 +547,26 @@ function sections(page: Page): Section[] {
   return found;
 }
 
+export function isStale(page: Page, now = Date.now()): boolean {
+  return now - Date.parse(page.fetchedAt) > STALE_MS;
+}
+
+function pageMetadata(page: Page) {
+  const {
+    text: _text,
+    anchors: _anchors,
+    anchorsSha256: _anchorsSha256,
+    ...metadata
+  } = page;
+  return metadata;
+}
+
 export class SearchIndex {
   private chunks: Chunk[] = [];
   private frequencies = new Map<string, number>();
   private pageSections = new Map<string, Section[]>();
   private averageLength = 1;
+  private citation = createCitationResolver();
   readonly revision: string;
   constructor(readonly corpus: Corpus) {
     this.revision = createHash("sha256")
@@ -600,21 +661,22 @@ export class SearchIndex {
         total: pages.length,
         offset,
         nextOffset: end < pages.length ? end : null,
-        documents: pages.slice(offset, end).map(({ text, ...metadata }) => ({
-          ...metadata,
-          title: cleanHeading(metadata.title),
-          totalLines: text.split("\n").length,
+        documents: pages.slice(offset, end).map((page) => ({
+          ...pageMetadata(page),
+          title: cleanHeading(page.title),
+          totalLines: page.text.split("\n").length,
         })),
         coverage,
       }),
     );
   }
 
-  search(query: string, source?: Source, limit = 5) {
+  search(query: string, source?: Source, limit = 5, only?: Set<string>) {
     const words = [...new Set(tokens(query))];
     const best = new Map<string, { chunk: Chunk; score: number }>();
     for (const chunk of this.chunks) {
       if (source && chunk.page.source !== source) continue;
+      if (only && !only.has(chunk.page.id)) continue;
       let score = 0;
       let matchedTerms = 0;
       for (const word of words) {
@@ -649,6 +711,7 @@ export class SearchIndex {
         const peak = weights.indexOf(Math.max(...weights));
         const first = Math.max(0, peak - 2);
         const last = Math.min(lines.length, first + 12);
+        const excerpt = lines.slice(first, last).join("\n");
         return {
           id: chunk.page.id,
           title: cleanHeading(chunk.page.title),
@@ -659,12 +722,15 @@ export class SearchIndex {
           source: chunk.page.source,
           version: chunk.page.version,
           fetchedAt: chunk.page.fetchedAt,
+          sha256: chunk.page.sha256,
+          stale: isStale(chunk.page),
           contentWarnings: chunk.page.contentWarnings ?? [],
           startLine: chunk.startLine + first,
           endLine: chunk.startLine + last - 1,
           score: Math.round(score * 100) / 100,
           matchedTerms: words.filter((word) => chunk.counts.has(word)),
-          excerpt: lines.slice(first, last).join("\n"),
+          excerpt,
+          ...this.citation(chunk.page, chunk.section, excerpt),
         };
       });
   }
@@ -702,7 +768,7 @@ export class SearchIndex {
       throw new Error(
         `startLine must be within the ${section ? "section" : "document"} line range (${section?.startLine ?? 1}-${section?.endLine ?? lines.length})`,
       );
-    const { text: _, ...metadata } = page;
+    const metadata = pageMetadata(page);
     if (sectionOffset < 0 || sectionOffset > headings.length)
       throw new Error("sectionOffset exceeds section directory length");
     const directory = boundedReply(
@@ -721,19 +787,30 @@ export class SearchIndex {
     return boundedReply(
       first,
       Math.min(section?.endLine ?? lines.length, first - 1 + lineCount),
-      (endLine) => ({
-        ...metadata,
-        revision: this.revision,
-        title: cleanHeading(page.title),
-        section: section ?? null,
-        ...directory,
-        startLine: first,
-        endLine,
-        totalLines: lines.length,
-        nextLine:
-          endLine < (section?.endLine ?? lines.length) ? endLine + 1 : null,
-        text: lines.slice(first - 1, endLine).join("\n"),
-      }),
+      (endLine) => {
+        const text = lines.slice(first - 1, endLine).join("\n");
+        // Cite the explicit section, else the innermost heading containing the passage.
+        const cited =
+          section ??
+          headings.findLast(
+            (item) => item.startLine <= first && item.endLine >= endLine,
+          );
+        return {
+          ...metadata,
+          revision: this.revision,
+          title: cleanHeading(page.title),
+          stale: isStale(page),
+          section: section ?? null,
+          ...directory,
+          startLine: first,
+          endLine,
+          totalLines: lines.length,
+          nextLine:
+            endLine < (section?.endLine ?? lines.length) ? endLine + 1 : null,
+          text,
+          ...this.citation(page, cited, text),
+        };
+      },
     );
   }
 }

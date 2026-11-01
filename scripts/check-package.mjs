@@ -4,6 +4,9 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve, join } from "node:path";
 const root = resolve(process.argv[2]);
+const manifest = JSON.parse(
+  await readFile(join(root, "manifest.json"), "utf8"),
+);
 const cache = resolve(process.argv[3]);
 await mkdir(cache, { recursive: true });
 const entry = join(root, "server", "server.js");
@@ -38,10 +41,24 @@ async function call(name, args = {}) {
 const checks = [];
 try {
   await connect();
-  assert.equal((await client.listTools()).tools.length, 5);
+  const tools = (await client.listTools()).tools;
+  assert.deepEqual(tools.map((tool) => tool.name).sort(), [
+    "capture_evidence",
+    "docs_status",
+    "get_guidance",
+    "list_docs",
+    "read_doc",
+    "refresh_docs",
+    "search_docs",
+  ]);
+  assert.ok(tools.every((tool) => tool.outputSchema));
+  assert.deepEqual(
+    manifest.tools.map((tool) => tool.name).sort(),
+    tools.map((tool) => tool.name).sort(),
+  );
   const started = performance.now();
   let status = await call("docs_status");
-  assert.equal(status.server.version, "0.1.2");
+  assert.equal(status.server.version, manifest.version);
   const firstSession = status.connection.sessionId;
   assert.ok(
     performance.now() - started < 5000,
@@ -59,6 +76,21 @@ try {
     JSON.stringify(status),
   );
   checks.push("First-use download completes for both sources");
+  const linkDeadline = Date.now() + 120000;
+  while (
+    (status.runtime.checkingLinks || !status.links.pagesWithVerifiedAnchors) &&
+    Date.now() < linkDeadline
+  ) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    status = await call("docs_status");
+  }
+  assert.ok(
+    status.links.pagesWithVerifiedAnchors > 300,
+    JSON.stringify(status.links),
+  );
+  checks.push(
+    `Background section-link check verified anchors on ${status.links.pagesWithVerifiedAnchors} pages`,
+  );
   const search = await call("search_docs", {
     query: "nested collections inherit permissions",
   });
@@ -72,7 +104,52 @@ try {
     revision: search.revision,
   });
   assert.match(page.text, /don't inherit/);
-  checks.push("Search and section reading return cited evidence");
+  assert.equal(page.linkStatus, "verified");
+  assert.equal(
+    page.sectionUrl,
+    "https://bitwarden.com/help/about-collections/#nested-collections",
+  );
+  checks.push(
+    "Search and section reading return cited evidence with verified section links",
+  );
+  const guide = await call("get_guidance", {
+    question:
+      "Does our identity provider get vault decryption keys when we enable SSO?",
+  });
+  assert.notEqual(guide.guideReviewedAt, "not reviewed");
+  assert.equal(guide.topics[0].id, "sso-decryption");
+  assert.ok(guide.documentation.length && guide.recommendations.length);
+  checks.push(
+    `Packaged guidance uses the shipped review lock (status ${guide.status})`,
+  );
+  const refusal = await call("get_guidance", {
+    question: "What discount did we negotiate in our renewal contract?",
+  });
+  assert.equal(refusal.status, "unsupported");
+  checks.push("Packaged guidance refuses private commercial questions");
+  const lines = page.text.split("\n");
+  const line =
+    page.startLine + lines.findIndex((text) => text.includes("don't inherit"));
+  const capture = await client.callTool(
+    {
+      name: "capture_evidence",
+      arguments: {
+        id: page.id,
+        revision: page.revision,
+        startLine: line,
+        endLine: line,
+        sectionId: "nested-collections",
+      },
+    },
+    undefined,
+    { timeout: 60000 },
+  );
+  assert.ok(!capture.isError, JSON.stringify(capture));
+  assert.equal(capture.structuredContent.status, "captured");
+  assert.ok(capture.content.some((item) => item.type === "image"));
+  checks.push(
+    `Packaged capture_evidence used installed ${capture.structuredContent.browser} and returned a highlighted PNG`,
+  );
   const refreshed = await call("refresh_docs");
   assert.ok(refreshed.sources.every((source) => source.complete));
   checks.push("Explicit refresh completes");

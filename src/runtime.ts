@@ -9,6 +9,7 @@ import {
   type Corpus,
   type Source,
 } from "./corpus.js";
+import { refreshSectionLinks } from "./links.js";
 
 export class CorpusManager {
   private pending?: Promise<Corpus>;
@@ -17,10 +18,17 @@ export class CorpusManager {
   private signature = "";
   private cached?: Corpus;
   private refreshError?: string;
+  private linking?: Promise<unknown>;
+  private linkError?: string;
   constructor(
     readonly cache = CACHE,
     private refreshFn = refresh,
     private now = Date.now,
+    // Link checks contact bitwarden.com; injected refresh functions (tests) skip them by default.
+    private linksFn:
+      ((cache: string) => Promise<unknown>) | undefined = refreshFn === refresh
+      ? (dir) => refreshSectionLinks(dir)
+      : undefined,
   ) {}
 
   async load(): Promise<Corpus> {
@@ -66,6 +74,9 @@ export class CorpusManager {
       const result = await this.pending;
       if (covers) return result;
     }
+    // A link check holds the cache lock; let it finish before refreshing text.
+    await this.linking?.catch(() => {});
+    if (this.pending) return this.run(sources);
     this.pendingSources = sources;
     this.retryAfter = this.now() + 15 * 60_000;
     this.pending = this.refreshFn(sources, this.cache);
@@ -78,6 +89,7 @@ export class CorpusManager {
       )
         ? this.now() + STALE_MS
         : this.retryAfter;
+      this.checkLinks();
       return corpus;
     } catch {
       this.refreshError =
@@ -87,6 +99,22 @@ export class CorpusManager {
       this.pending = undefined;
       this.pendingSources = [];
     }
+  }
+
+  private checkLinks() {
+    if (!this.linksFn || this.linking) return;
+    this.linking = this.linksFn(this.cache)
+      .then(() => {
+        this.linkError = undefined;
+        this.signature = "";
+      })
+      .catch(() => {
+        this.linkError =
+          "Section link check failed. Citations fall back to page URLs.";
+      })
+      .finally(() => {
+        this.linking = undefined;
+      });
   }
 
   async forRead(waitMs = 8000): Promise<Corpus> {
@@ -150,7 +178,9 @@ export class CorpusManager {
   state() {
     return {
       refreshing: !!this.pending,
+      checkingLinks: !!this.linking,
       refreshError: this.refreshError ?? null,
+      linkError: this.linkError ?? null,
       retryAfter: this.retryAfter
         ? new Date(this.retryAfter).toISOString()
         : null,
