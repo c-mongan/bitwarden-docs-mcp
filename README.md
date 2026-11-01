@@ -2,11 +2,11 @@
 
 Search official Bitwarden documentation from Claude, get cited admin guidance, and capture highlighted screenshots of the official source. Install one local extension. No Bitwarden account, API key, separate Node.js installation, or hosted server is needed.
 
-This is an unofficial extension. Bitwarden does not endorse it.
+This is an unofficial extension. Bitwarden does not endorse it. Source code is MIT-licensed; see [LICENSE](LICENSE).
 
 ## Install
 
-1. Download `bitwarden-docs-0.2.0.mcpb` to your Mac or Windows computer.
+1. Get `bitwarden-docs-0.2.0.mcpb`: build it with `npm ci && npm run package` (see Developer checks) or obtain it from the maintainer. Check it against its `.sha256` file.
 2. Open Claude Desktop. Open **Settings → Desktop app → Extensions → Manage**. Older versions use **Settings → Extensions**.
 3. Open **Advanced settings**, select **Install Extension…**, and select the `.mcpb` file. Review the package details and install it. Your organization can restrict custom extensions.
 4. Start a new Claude chat and enable **Bitwarden Docs (Unofficial)** in the tools or connectors menu.

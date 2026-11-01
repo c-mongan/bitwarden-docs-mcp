@@ -49,6 +49,7 @@ try {
     "PRIVACY.md",
     "NOTICE.md",
     "SECURITY.md",
+    "LICENSE",
   ]) {
     await cp(join(root, name), join(stage, name));
   }

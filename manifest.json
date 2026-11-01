@@ -59,5 +59,10 @@
     "local",
     "read-only",
     "citations"
-  ]
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/c-mongan/bitwarden-docs-mcp.git"
+  }
 }

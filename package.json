@@ -44,5 +44,10 @@
   "description": "Local official Bitwarden documentation search for Claude Desktop",
   "overrides": {
     "tmp": "0.2.7"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/c-mongan/bitwarden-docs-mcp.git"
   }
 }
